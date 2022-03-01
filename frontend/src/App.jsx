@@ -7,6 +7,8 @@ import OlvidePassword from './paginas/OlvidePassword';
 import NuevoPassword from './paginas/NuevoPassword';
 import ConfirmarCuenta from './paginas/ConfirmarCuenta';
 
+console.log('BackEnd desde: ', import.meta.env.VITE_BACKEND_URL);
+
 
 function App() {
 
