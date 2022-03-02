@@ -1,3 +1,4 @@
+import FormularioProyecto from "../components/FromularioProyecto";
 
 
 function NuevoProyecto() {
@@ -5,8 +6,8 @@ function NuevoProyecto() {
         <>
             <h1 className="text-4xl font-black">NuevoProyecto</h1>
 
-            <div className="">
-
+            <div className="mt-10 flex justify-center">
+                <FormularioProyecto/>
             </div>
         </>
     );
