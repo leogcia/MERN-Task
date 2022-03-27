@@ -1,18 +1,34 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 import useProyectos from "../hooks/useProyectos";
 import Alerta from "./Alerta";
 
 
 
-
 function FormularioProyecto() {
 
+    const [id, setId] = useState(null);
     const [nombre, setNombre] = useState('');
     const [descripcion, setDescripcion] = useState();
     const [fechaEntrega, setFechaEntrega] = useState('');
     const [cliente, setCliente] = useState('');
 
-    const { alerta, mostrarAlerta, submitProyecto } = useProyectos();
+    const params = useParams();
+    
+    const { alerta, mostrarAlerta, submitProyecto, proyecto } = useProyectos();
+
+    useEffect(() => {  //Para verificar si hay un id para EDITAR!!!
+        if( params.id ) {
+            // Rellenar los campos con los datos del proyecto a editar:
+            setId(proyecto._id)
+            setNombre(proyecto.nombre)
+            setDescripcion(proyecto.descripcion)
+            setFechaEntrega(proyecto.fechaEntrega?.split('T')[0]) //Para poder llenar la fecha desde el formato (preguntando si existe el parámetro de fechaEntrega).
+            setCliente(proyecto.cliente)
+        } else {
+            console.log('nuevo proyecto')
+        }
+    }, [params]);
 
     const handelSubmit =async e => {
         e.preventDefault();
@@ -25,7 +41,8 @@ function FormularioProyecto() {
             return;
         }
         // Pasara los datos hacia el provider:
-        await submitProyecto({ nombre, descripcion, fechaEntrega, cliente});
+        await submitProyecto({ id, nombre, descripcion, fechaEntrega, cliente});
+        setId(null);
         setNombre('');
         setDescripcion('');
         setFechaEntrega('');
@@ -104,7 +121,7 @@ function FormularioProyecto() {
 
             <input
                 type='submit'
-                value='Crear Proyecto'
+                value={id ? 'Actualizar Proyecto' : 'Crear Proyecto'}
                 className="bg-sky-600 w-full p-3 uppercase font-bold text-white rounded cursor-pointer hover:bg-sky-700 transition-colors"
             />
         </form>

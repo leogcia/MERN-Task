@@ -30,7 +30,7 @@ function Login() {
             setAlerta({});
             localStorage.setItem('token', data.token);
             setAuth( data );
-            //navigate('/proyectos')
+            navigate('/proyectos')
 
         } catch (error) {
             setAlerta({
