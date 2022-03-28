@@ -17,6 +17,9 @@ const agregarTarea = async (req, res) => {
 
     try {
         const tareaAlmacenada = await Tarea.create( req.body );
+        //Almacenar el ID en el proyecto:
+        existeProyecto.tareas.push(tareaAlmacenada._id); //En React es mejor usar el spred operator y no el push, aunque para éste caso sirve sin problema.
+        await existeProyecto.save();
         res.json( tareaAlmacenada );
     } catch (error) {
         console.log(error);
