@@ -10,6 +10,7 @@ const ProyectosProvider = ({ children }) => {
     const [alerta, setAlerta] = useState({});
     const [proyecto, setProyecto] = useState({});
     const [cargando, setCargando] = useState(false);
+    const [modalFormularioTarea, setModalFormularioTarea] = useState(false);
 
     useEffect(() => {
         const obtenerProyectos = async () => {
@@ -161,6 +162,14 @@ const ProyectosProvider = ({ children }) => {
         }
     };
 
+    const handleModalTarea = () => {
+        setModalFormularioTarea( !modalFormularioTarea )
+    };
+
+    const submitTarea = async ( tarea ) => {
+        console.log(tarea)
+    };
+
     return (
         <ProyectosContext.Provider
             value={{
@@ -168,10 +177,13 @@ const ProyectosProvider = ({ children }) => {
                 alerta,
                 proyecto,
                 cargando,
+                modalFormularioTarea,
                 mostrarAlerta,
                 submitProyecto,
                 obtenerProyecto,
-                eliminarProyecto
+                eliminarProyecto,
+                handleModalTarea,
+                submitTarea
             }}
         >{ children }</ProyectosContext.Provider>
     )
