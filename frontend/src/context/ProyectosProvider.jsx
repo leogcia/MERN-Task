@@ -179,7 +179,14 @@ const ProyectosProvider = ({ children }) => {
             }
 
             const { data } = await clienteAxios.post('/tareas', tarea, config)
-            console.log(data)
+
+            //Agregar tarea al state:
+            const proyectoActualizado = { ...proyecto }
+            proyectoActualizado.tareas = [ ...proyecto.tareas, data ]
+            setProyecto( proyectoActualizado )
+            setAlerta({})
+            setModalFormularioTarea( false ) //cerrar el formulario al crear la tarea
+
         } catch (error) {
             console.log(error);
         }
