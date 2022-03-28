@@ -14,6 +14,7 @@ const PRIORIDAD = ['Baja', 'Media', 'Alta'];
 
 const ModalFormularioTarea = () => {
 
+    const [id, setId] = useState('');  //Setearemos un id para saber si estamos editando una tarea.
     const [nombre, setNombre] = useState('');
     const [descripcion, setDescripcion] = useState('');
     const [prioridad, setPrioridad] = useState('');
@@ -21,7 +22,24 @@ const ModalFormularioTarea = () => {
 
     const params = useParams();
 
-    const { modalFormularioTarea, handleModalTarea, mostrarAlerta, alerta, submitTarea } = useProyectos();
+    const { modalFormularioTarea, handleModalTarea, mostrarAlerta, alerta, submitTarea, tarea } = useProyectos();
+
+    //Rellenar los datos automáticamente al editar una tarea seleccionada, o mostrar los campos vacíos si es una tarea nueva.
+    useEffect(() => {
+        if( tarea?._id ) {
+            setId(tarea._id)
+            setNombre(tarea.nombre)
+            setDescripcion(tarea.descripcion)
+            setFechaEntrega(tarea.fechaEntrega?.split('T')[0])
+            setPrioridad(tarea.prioridad)
+            return
+        }
+        setId('')
+        setNombre('')
+        setDescripcion('')
+        setFechaEntrega('')
+        setPrioridad('')
+    }, [tarea]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -32,7 +50,8 @@ const ModalFormularioTarea = () => {
             })
             return;
         }
-        await submitTarea({ nombre, descripcion, fechaEntrega, prioridad, proyecto: params.id });
+        await submitTarea({ id, nombre, descripcion, fechaEntrega, prioridad, proyecto: params.id });
+        setId('');
         setNombre('');
         setDescripcion('');
         setFechaEntrega('');
@@ -93,7 +112,7 @@ const ModalFormularioTarea = () => {
                             <div className="sm:flex sm:items-start">
                                 <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
                                     <Dialog.Title as="h3" className="text-lg leading-6 font-bold text-gray-900">
-                                        Crear Tarea
+                                        { id ? 'Editar Tarea' : 'Crear Tarea' }
                                     </Dialog.Title>
 
                                     { msg && <Alerta alerta={alerta} /> }
@@ -171,7 +190,7 @@ const ModalFormularioTarea = () => {
                                         <input
                                             type='submit'
                                             className='bg-sky-600 hover:bg-sky-700 w-full p-3 text-white uppercase font-bold cursor-pointer transition-colors rounded text-sm'
-                                            value='Crear Tarea'
+                                            value={ id ? 'Guardar Cambios' : 'Crear Tarea' }
                                         />
                                     </form>
                                 </div>

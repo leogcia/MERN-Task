@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import Spinner from '../components/Spinner';
 import useProyectos from '../hooks/useProyectos';
@@ -11,8 +11,6 @@ function Proyecto() {
 
     const { obtenerProyecto, proyecto, cargando, handleModalTarea } = useProyectos();
 
-    const [modal, setModal] = useState(false);
-    
     useEffect(() => {
         obtenerProyecto(params.id)
     }, []);
@@ -60,10 +58,7 @@ function Proyecto() {
                     <p className='text-center my-5 p-10'> No hay tareas en éste proyecto.</p> }
             </div>
             
-            <ModalFormularioTarea 
-                modal={modal}
-                setModal={setModal}
-            />
+            <ModalFormularioTarea />
         </>
     );
 }
