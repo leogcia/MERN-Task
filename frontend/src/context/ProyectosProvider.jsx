@@ -12,6 +12,7 @@ const ProyectosProvider = ({ children }) => {
     const [cargando, setCargando] = useState(false);
     const [modalFormularioTarea, setModalFormularioTarea] = useState(false);
     const [tarea, setTarea] = useState({});
+    const [modalEliminarTarea, setModalEliminarTarea] = useState(false);
 
     useEffect(() => {
         const obtenerProyectos = async () => {
@@ -236,6 +237,46 @@ const ProyectosProvider = ({ children }) => {
         
     };
 
+    const handleModalEliminarTarea = tarea => {
+        setTarea(tarea)
+        //setModalEliminarTarea( true )   //Cualquiera de esta opciones es válida
+        setModalEliminarTarea( !modalEliminarTarea )
+        
+    };
+
+    const eliminarTarea = async () => {
+        try {
+            const token = localStorage.getItem('token');
+            if( !token ) return;
+
+            const config = {
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`
+                }
+            }
+
+            const { data } = await clienteAxios.delete(`/tareas/${tarea._id}`, config)
+            setAlerta({
+                msg: data.msg,
+                error: false
+            })
+            
+            // Actualizar el DOM
+            const proyectoActualizado = { ...proyecto } //copia del proyecto
+            proyectoActualizado.tareas = proyectoActualizado.tareas.filter( tareaState => tareaState._id !== tarea._id )
+            setProyecto( proyectoActualizado )
+            setModalEliminarTarea( false )
+            setTarea({})
+            setTimeout(() => {
+                setAlerta({})
+            }, 3000);
+
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
     return (
         <ProyectosContext.Provider
             value={{
@@ -245,13 +286,16 @@ const ProyectosProvider = ({ children }) => {
                 cargando,
                 modalFormularioTarea,
                 tarea,
+                modalEliminarTarea,
                 mostrarAlerta,
                 submitProyecto,
                 obtenerProyecto,
                 eliminarProyecto,
                 handleModalTarea,
                 submitTarea,
-                handleModalEditarTarea
+                handleModalEditarTarea,
+                handleModalEliminarTarea,
+                eliminarTarea
             }}
         >{ children }</ProyectosContext.Provider>
     )
