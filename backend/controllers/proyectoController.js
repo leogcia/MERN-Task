@@ -23,8 +23,11 @@ const nuevoProyecto = async (req, res) => {
 
 const obtenerProyecto = async (req, res) => {
     const { id } = req.params;
-    const proyecto = await Proyecto.findById( id ).populate('tareas'); //Encuentro el proyecto por el id, también traigo toda la info de tareas con el populate
-    //console.log(proyecto)
+    //Encuentro el proyecto por el id, también traigo toda la info de tareas y colaboradores con el populate
+    const proyecto = await Proyecto.findById( id )
+    .populate('tareas')
+    .populate('colaboradores', 'nombre email') // selecciono nombre y email como los unicos parametros a utilizar... select solo sirve para consultas simples, en este caso ya estamos cruzando información por lo que select no nos funcionará
+
     if( !proyecto ) {
         const error = new Error('Proyecto no encontrado.');
         return res.status(404).json({ msg: error.message });
@@ -134,7 +137,20 @@ const agregarColaborador = async (req, res) => {
 };
 
 const eliminarColaborador = async (req, res) => {
-    
+    const proyecto = await Proyecto.findById(req.params.id);
+    if(!proyecto) {
+        const error = new Error('Proyecto no encontrado.');
+        return res.status(404).json({ msg: error.message })
+    }
+    // Pregunto si el usuario que quiere eliminar a un colaborador es el creador del proyecto:
+    if(proyecto.creador.toString() !== req.usuario._id.toString()) {
+        const error = new Error('Acción no válida.');
+        return res.status(404).json({ msg: error.message })
+    }
+    //Esta bien, se puede eliminar
+    proyecto.colaboradores.pull(req.body.id);
+    await proyecto.save();
+    res.json({ msg: 'Colaborador Eliminado.' })
 };
 
 
