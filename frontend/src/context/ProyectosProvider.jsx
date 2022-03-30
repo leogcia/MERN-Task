@@ -13,6 +13,7 @@ const ProyectosProvider = ({ children }) => {
     const [modalFormularioTarea, setModalFormularioTarea] = useState(false);
     const [tarea, setTarea] = useState({});
     const [modalEliminarTarea, setModalEliminarTarea] = useState(false);
+    const [colaborador, setColaborador] = useState({});
 
     useEffect(() => {
         const obtenerProyectos = async () => {
@@ -128,7 +129,10 @@ const ProyectosProvider = ({ children }) => {
             setProyecto( data );
 
         } catch (error) {
-            console.log(error);
+            setAlerta({
+                msg: error.response.data.msg,
+                error: true
+            })
         }
         setCargando(false)
     }
@@ -278,7 +282,58 @@ const ProyectosProvider = ({ children }) => {
     };
 
     const submitColaborador = async email => {
-        console.log(email)
+
+        setCargando(true)
+        try {
+            const token = localStorage.getItem('token');
+            if( !token ) return;
+
+            const config = {
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`
+                }
+            }
+
+            const { data } = await clienteAxios.post('/proyectos/colaboradores', { email }, config)
+            setColaborador( data )
+            setAlerta({})
+
+        } catch (error) {
+            setAlerta({
+                msg: error.response.data.msg,
+                error: true
+            })
+        }
+        setCargando(false)
+    };
+
+    const agregarColaborador = async email => {
+        try {
+            const token = localStorage.getItem('token');
+            if( !token ) return;
+
+            const config = {
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`
+                }
+            }
+
+            const { data } = await clienteAxios.post(`/proyectos/colaboradores/${proyecto._id}`, email, config)
+            setAlerta({
+                msg: data.msg,
+                error: false
+            })
+            setColaborador({})
+            setAlerta({})
+
+        } catch (error) {
+            setAlerta({
+                msg: error.response.data.msg,
+                error: true
+            })
+        }
     };
 
     return (
@@ -291,6 +346,7 @@ const ProyectosProvider = ({ children }) => {
                 modalFormularioTarea,
                 tarea,
                 modalEliminarTarea,
+                colaborador,
                 mostrarAlerta,
                 submitProyecto,
                 obtenerProyecto,
@@ -300,7 +356,8 @@ const ProyectosProvider = ({ children }) => {
                 handleModalEditarTarea,
                 handleModalEliminarTarea,
                 eliminarTarea,
-                submitColaborador
+                submitColaborador,
+                agregarColaborador
             }}
         >{ children }</ProyectosContext.Provider>
     )
