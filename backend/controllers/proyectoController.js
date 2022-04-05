@@ -4,7 +4,16 @@ import Usuario from '../models/Usuario.js';
 
 
 const obtenerProyectos = async (req, res) => {
-    const proyectos = await Proyecto.find().where('creador').equals(req.usuario).select('-tareas');  //Buscamos los proyectos hechos unicamente por el usuario seleccionado. También no traemos las tareas ( en éste punto no son necesarias ).
+    const proyectos = await Proyecto.find({
+        '$or': [
+            { 'colaboradores': { $in: req.usuario }},
+            { 'creador': { $in: req.usuario }},
+        ]
+    })
+    // Al usar las opciones de '$or' en el find, decimos que busque por colaboradores o por creador, por lo que el "where" ya no es necesario
+    // .where('creador') //Buscamos los proyectos hechos unicamente por el usuario seleccionado.
+    // .equals(req.usuario)
+    .select('-tareas');   //También no traemos las tareas ( en éste punto no son necesarias ).
     res.json(proyectos);
 };
 
@@ -32,8 +41,8 @@ const obtenerProyecto = async (req, res) => {
         const error = new Error('Proyecto no encontrado.');
         return res.status(404).json({ msg: error.message });
     }
-    //Pregunto si el creador del proyecto es diferente al usuario autenticado:
-    if( proyecto.creador.toString() !== req.usuario._id.toString() ) {
+    //Pregunto si el creador del proyecto es diferente al usuario autenticado && some() para buscar algún colaborador dependiendo si se cumple la función devuelve un booleano:
+    if( proyecto.creador.toString() !== req.usuario._id.toString() && !proyecto.colaboradores.some( colaborador => colaborador._id.toString() === req.usuario._id.toString() ) ) {
         const error = new Error('Acción NO válida.');
         return res.status(401).json({ msg: error.message });
     }
