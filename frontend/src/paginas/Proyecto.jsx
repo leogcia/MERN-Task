@@ -15,7 +15,7 @@ let socket;
 
 function Proyecto() {
     const params = useParams();
-    const { obtenerProyecto, proyecto, cargando, handleModalTarea, alerta, submitTareasProyecto, eliminarTareaProyecto, actualizarTareaProyecto } = useProyectos();
+    const { obtenerProyecto, proyecto, cargando, handleModalTarea, alerta, submitTareasProyecto, eliminarTareaProyecto, actualizarTareaProyecto, cambiarEstadoTareaProyecto } = useProyectos();
     const admin = useAdmin();  // ver si es admin el usuario:
     
     useEffect(() => {
@@ -45,6 +45,12 @@ function Proyecto() {
         socket.on('tarea actualizada', tareaActualizada => {
             if( tareaActualizada.proyecto._id === proyecto._id ) {
                 actualizarTareaProyecto(tareaActualizada)
+            }
+        })
+
+        socket.on('nuevo estado', nuevoEstado => {
+            if(nuevoEstado.proyecto._id === proyecto._id) {
+                cambiarEstadoTareaProyecto(nuevoEstado)
             }
         })
     })
