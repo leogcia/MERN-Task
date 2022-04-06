@@ -1,9 +1,11 @@
 import { Link } from "react-router-dom";
-
-
+import useProyectos from "../hooks/useProyectos";
+import Busqueda from "./Busqueda";
 
 
 function Header() {
+    
+    const { handleBuscador } = useProyectos();
     return (
         <div>
             <header className="px-4 py-5 bg-white border-b">
@@ -15,6 +17,7 @@ function Header() {
                     <button
                         type="button"
                         className="font-bold uppercase"
+                        onClick={ handleBuscador }
                     >Buscar Proyecto</button>
 
                     <div className="flex flex-col md:flex-row items-center gap-4">
@@ -27,6 +30,8 @@ function Header() {
                             type="button"
                             className="text-white text-sm bg-sky-600 p-3 rounded-md uppercase font-bold"
                         >Cerrar Sesión</button>    
+
+                        <Busqueda />
                     </div>
                 </div>
             </header>
