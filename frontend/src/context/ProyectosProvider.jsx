@@ -1,7 +1,8 @@
 import { createContext, useEffect, useState } from "react";
 import { useNavigate } from 'react-router-dom';
 import clienteAxios from "../config/clienteAxios";
-import io from 'socket.io-client';
+import io from 'socket.io-client'; 
+import useAuth from '../hooks/useAuth';
 
 let socket;
 
@@ -9,6 +10,8 @@ const ProyectosContext = createContext();
 const ProyectosProvider = ({ children }) => {
 
     const navigate = useNavigate();
+    const { auth } = useAuth();   // Obtener la información del ususario autenticado
+
     const [proyectos, setProyectos] = useState([]);
     const [alerta, setAlerta] = useState({});
     const [proyecto, setProyecto] = useState({});
@@ -40,7 +43,7 @@ const ProyectosProvider = ({ children }) => {
             }
         }
         obtenerProyectos();
-    }, []);
+    }, [auth]);
 
     useEffect(() => {
         // conecto socket.io con el back:
@@ -458,6 +461,12 @@ const ProyectosProvider = ({ children }) => {
         setProyecto( proyectoActualizado )
     };
 
+    const cerrarSesionProyectos = () => {
+        setProyectos([]);
+        setProyecto({})
+        setAlerta({})
+    };
+
     return (
         <ProyectosContext.Provider
             value={{
@@ -489,7 +498,8 @@ const ProyectosProvider = ({ children }) => {
                 submitTareasProyecto,
                 eliminarTareaProyecto,
                 actualizarTareaProyecto,
-                cambiarEstadoTareaProyecto
+                cambiarEstadoTareaProyecto,
+                cerrarSesionProyectos
             }}
         >{ children }</ProyectosContext.Provider>
     )
