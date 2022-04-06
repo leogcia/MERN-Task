@@ -2,24 +2,11 @@ import { useEffect } from "react";
 import PreviewProyecto from "../components/PreviewProyecto";
 import useProyectos from "../hooks/useProyectos";
 import Alerta from "../components/Alerta";
-import io from 'socket.io-client';
 
-let socket;
 
 function Proyectos() {
 
     const { proyectos, alerta } = useProyectos();
-
-    useEffect(() => {
-        socket = io( import.meta.env.VITE_BACKEND_URL )
-        socket.emit('prueba', 'Leo')
-
-        socket.on('respuesta', (persona) => {
-            console.log('Desde el backend', persona)
-        })
-    
-    });  // para socket.io es mejor no dejar que se ejecute una sola vez
-
     const { msg } = alerta;
 
     return (

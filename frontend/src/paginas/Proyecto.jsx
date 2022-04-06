@@ -9,16 +9,33 @@ import ModalEliminarColaborador from '../components/ModalEliminarColaborador';
 import Tarea from '../components/Tarea';
 import Alerta from '../components/Alerta';
 import Colaborador from '../components/Colaborador';
+import io from 'socket.io-client';
 
+let socket;
 
 function Proyecto() {
     const params = useParams();
-    const { obtenerProyecto, proyecto, cargando, handleModalTarea, alerta } = useProyectos();
+    const { obtenerProyecto, proyecto, cargando, handleModalTarea, alerta, submitTareasProyecto } = useProyectos();
     const admin = useAdmin();  // ver si es admin el usuario:
     
     useEffect(() => {
         obtenerProyecto(params.id)
-    }, []);
+    }, [])
+
+    useEffect(() => {
+        //Conecto a socket.io:
+        socket = io(import.meta.env.VITE_BACKEND_URL)
+        // Emito un evento:
+        socket.emit('abrir proyecto', params.id)
+    }, [])
+
+    useEffect(() => {
+        socket.on('tarea agregada', tareaNueva => {
+            if( tareaNueva.proyecto === proyecto._id ) {
+                submitTareasProyecto(tareaNueva)
+            }
+        })
+    })
 
     const { nombre } = proyecto;
 

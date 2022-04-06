@@ -1,6 +1,9 @@
 import { createContext, useEffect, useState } from "react";
-import clienteAxios from "../config/clienteAxios";
 import { useNavigate } from 'react-router-dom';
+import clienteAxios from "../config/clienteAxios";
+import io from 'socket.io-client';
+
+let socket;
 
 const ProyectosContext = createContext();
 const ProyectosProvider = ({ children }) => {
@@ -37,6 +40,11 @@ const ProyectosProvider = ({ children }) => {
             }
         }
         obtenerProyectos();
+    }, []);
+
+    useEffect(() => {
+        // conecto socket.io con el back:
+        socket = io(import.meta.env.VITE_BACKEND_URL)
     }, []);
 
     const mostrarAlerta = alerta => {
@@ -204,12 +212,15 @@ const ProyectosProvider = ({ children }) => {
 
             const { data } = await clienteAxios.post('/tareas', tarea, config)
 
-            //Agregar tarea al state:
-            const proyectoActualizado = { ...proyecto }
-            proyectoActualizado.tareas = [ ...proyecto.tareas, data ]
-            setProyecto( proyectoActualizado )
+            //Agregar tarea al state:  //!NOTA:::: se copió y paso a submitTareasProyecto para que Soket.io haga esta accioón
+            // const proyectoActualizado = { ...proyecto }
+            // proyectoActualizado.tareas = [ ...proyecto.tareas, data ]
+            // setProyecto( proyectoActualizado )
             setAlerta({})
             setModalFormularioTarea( false ) //cerrar el formulario al crear la tarea
+
+            //SOCKET.IO:
+            socket.emit('nueva tarea', data)
 
         } catch (error) {
             console.log(error);
@@ -410,6 +421,14 @@ const ProyectosProvider = ({ children }) => {
         setBuscador(!buscador)
     };
 
+    //SOCKET IO
+    const submitTareasProyecto = ( tarea ) => {
+        //Agregar tarea al state: 
+        const proyectoActualizado = { ...proyecto }
+        proyectoActualizado.tareas = [ ...proyectoActualizado.tareas, tarea ]
+        setProyecto( proyectoActualizado )
+    };
+
     return (
         <ProyectosContext.Provider
             value={{
@@ -437,7 +456,8 @@ const ProyectosProvider = ({ children }) => {
                 handleModalEliminarColaborador,
                 eliminarColaborador,
                 completarTarea,
-                handleBuscador
+                handleBuscador,
+                submitTareasProyecto
             }}
         >{ children }</ProyectosContext.Provider>
     )

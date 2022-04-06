@@ -59,11 +59,15 @@ const io = new Server(servidor, {
 
 io.on('connection', (socket) => {
     console.log('Conectado a socket.io');
-    //Definir los eventos de socket.io:
-    socket.on('prueba', (nombre) => {
-        console.log('Prueba desde socket io', nombre)
-    })
 
-    socket.emit('respuesta', {nombre: 'Leonardo'})
+    //*Definir los eventos de socket.io:
+    //Recibo los eventos del front:
+    socket.on('abrir proyecto', (proyecto) => {
+        socket.join(proyecto)  // El usuario se une al proyecto
+    });
 
-})
+    socket.on('nueva tarea', (tarea) => {
+        const proyecto = tarea.proyecto;
+        socket.to(proyecto).emit('tarea agregada', tarea)
+    });
+});
