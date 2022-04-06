@@ -34,7 +34,8 @@ const obtenerProyecto = async (req, res) => {
     const { id } = req.params;
     //Encuentro el proyecto por el id, también traigo toda la info de tareas y colaboradores con el populate
     const proyecto = await Proyecto.findById( id )
-    .populate('tareas')
+    //.populate('tareas')
+    .populate({ path: 'tareas', populate: {path: 'completado', select: 'nombre'} })  // para poder agregar un populate a un populate y selecciono nombre como única información a traer.
     .populate('colaboradores', 'nombre email') // selecciono nombre y email como los unicos parametros a utilizar... select solo sirve para consultas simples, en este caso ya estamos cruzando información por lo que select no nos funcionará
 
     if( !proyecto ) {

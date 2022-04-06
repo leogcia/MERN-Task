@@ -8,17 +8,16 @@ function Header() {
         <div>
             <header className="px-4 py-5 bg-white border-b">
                 <div className="md:flex md:justify-between">
-                    <h2 className="text-4xl text-sky-600 font-black">
+                    <h2 className="text-4xl text-sky-600 font-black text-center mb-5 md:mb-0">
                         UpTask
                     </h2>
 
-                    <input
-                        type='search'
-                        placeholder='Buscar Proyecto'
-                        className='rounded-lg lg:w-96 block p-2 border'
-                    />
+                    <button
+                        type="button"
+                        className="font-bold uppercase"
+                    >Buscar Proyecto</button>
 
-                    <div className="flex items-center gap-4">
+                    <div className="flex flex-col md:flex-row items-center gap-4">
                         <Link
                             to='/proyectos'
                             className="font-bold uppercase"

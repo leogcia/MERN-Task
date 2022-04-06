@@ -87,7 +87,10 @@ const eliminarTarea = async (req, res) => {
     }
 
     try {
-        await tarea.deleteOne();
+        const proyecto = await Proyecto.findById( tarea.proyecto );
+        proyecto.tareas.pull( tarea._id )
+        // se ejecutan en paralelo las siguientes promesas:
+        await Promise.allSettled( [await proyecto.save(), await tarea.deleteOne()] )
         res.json({ msg: 'La Tarea se eliminó.'})
     } catch (error) {
         console.log(error);
@@ -109,8 +112,11 @@ const cambiarEstado = async (req, res) => {
         return res.status(401).json({ msg: error.message });
     }
     tarea.estado = !tarea.estado; //cambio el estado de la tarea
+    tarea.completado = req.usuario._id
     await tarea.save();
-    res.json(tarea);
+    // Consulto de nuevo toda la info y asi me traigo todo y no solo el id como lo hacia anteriormente:
+    const tareaAlamacenada = await Tarea.findById( id ).populate( 'proyecto' ).populate( 'completado' );
+    res.json(tareaAlamacenada);
 };
 
 export {
