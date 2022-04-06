@@ -12,7 +12,13 @@ function Proyectos() {
 
     useEffect(() => {
         socket = io( import.meta.env.VITE_BACKEND_URL )
-    }, []);
+        socket.emit('prueba', 'Leo')
+
+        socket.on('respuesta', (persona) => {
+            console.log('Desde el backend', persona)
+        })
+    
+    });  // para socket.io es mejor no dejar que se ejecute una sola vez
 
     const { msg } = alerta;
 
